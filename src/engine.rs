@@ -22,7 +22,7 @@ impl Engine {
         let size = ({
             let bounds = video_subsystem.display_bounds(0).unwrap();
             cmp::max(bounds.w, bounds.h)
-        } as f32 * 0.5) as u32;
+        } as f32 * 0.6) as u32;
         let window = video_subsystem
             .window("Game of Life", size, size)
             .position_centered()
