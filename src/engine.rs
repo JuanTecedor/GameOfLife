@@ -1,4 +1,4 @@
-use crate::game::Game;
+use crate::game::{Game, GAME_SIZE};
 
 extern crate sdl2;
 
@@ -33,6 +33,16 @@ impl Engine {
             window_size : size,
             canvas,
         }
+    }
+
+    pub fn update_game(&self, game: &mut Game) {
+        let mut new_game = game.clone();
+        for i in 0..GAME_SIZE {
+            for j in 0..GAME_SIZE {
+                new_game.set_cell_status(game.next_cell_status(i, j), i, j);
+            }
+        }
+        *game = new_game;
     }
 
     pub fn draw_game(&mut self, game: &Game) {
