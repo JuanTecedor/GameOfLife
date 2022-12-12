@@ -1,5 +1,6 @@
 mod engine;
 mod game;
+mod cell;
 
 use std::time::Duration;
 

@@ -1,4 +1,5 @@
-use crate::game::{Game, CellStatus};
+use crate::game::Game;
+use crate::cell::CellStatus;
 
 extern crate sdl2;
 

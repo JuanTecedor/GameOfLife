@@ -1,16 +1,6 @@
+use crate::cell::{Cell, CellStatus};
+
 pub const GAME_SIZE : usize = 32;
-
-#[derive(Copy, Clone)]
-pub enum CellStatus {
-    ALIVE,
-    DEAD,
-}
-
-#[derive(Copy, Clone)]
-pub struct Cell {
-    pub current_state: CellStatus,
-    pub next_state: CellStatus,
-}
 
 type GridType = [[Cell; GAME_SIZE]; GAME_SIZE];
 
