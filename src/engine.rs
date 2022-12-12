@@ -1,4 +1,4 @@
-use crate::game::Game;
+use crate::game::{Game, CellStatus};
 
 extern crate sdl2;
 
@@ -50,7 +50,7 @@ impl Engine {
         self.canvas.set_draw_color(Color::RED);
         for (column_index, column) in game.grid().iter().enumerate() {
             for (cell_index, cell) in column.iter().enumerate() {
-                if cell.current_state {
+                if let CellStatus::ALIVE = cell.current_state {
                     let x0 = column_index as i32 * cell_side_size as i32;
                     let y0 = cell_index as i32 * cell_side_size as i32;
                     self.canvas.fill_rect(
