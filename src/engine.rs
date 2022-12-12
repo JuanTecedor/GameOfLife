@@ -1,4 +1,4 @@
-use crate::game::{Game, GAME_SIZE};
+use crate::game::Game;
 
 extern crate sdl2;
 
@@ -36,13 +36,8 @@ impl Engine {
     }
 
     pub fn update_game(&self, game: &mut Game) {
-        let mut new_game = game.clone();
-        for i in 0..GAME_SIZE {
-            for j in 0..GAME_SIZE {
-                new_game.set_cell_status(game.next_cell_status(i, j), i, j);
-            }
-        }
-        *game = new_game;
+        game.calculate_next_cell_status();
+        game.update_cells();
     }
 
     pub fn draw_game(&mut self, game: &Game) {
@@ -55,7 +50,7 @@ impl Engine {
         self.canvas.set_draw_color(Color::RED);
         for (column_index, column) in game.grid().iter().enumerate() {
             for (cell_index, cell) in column.iter().enumerate() {
-                if *cell {
+                if cell.current_state {
                     let x0 = column_index as i32 * cell_side_size as i32;
                     let y0 = cell_index as i32 * cell_side_size as i32;
                     self.canvas.fill_rect(
