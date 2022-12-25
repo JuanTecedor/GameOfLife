@@ -1,13 +1,12 @@
-use crate::game::Game;
 use crate::cell::CellStatus;
+use crate::game::Game;
 
 extern crate sdl2;
 
-use std::cmp;
 use sdl2::{
-    Sdl, render::Canvas, video::Window,
-    pixels::Color, event::Event, keyboard::Keycode, rect::Rect
+    event::Event, keyboard::Keycode, pixels::Color, rect::Rect, render::Canvas, video::Window, Sdl,
 };
+use std::cmp;
 
 pub struct Engine {
     sdl_context: Sdl,
@@ -17,21 +16,29 @@ pub struct Engine {
 
 impl Engine {
     pub fn new() -> Self {
-        let sdl_context = sdl2::init().unwrap();
-        let video_subsystem = sdl_context.video().unwrap();
+        let sdl_context = sdl2::init().expect("Could not init SDL2.");
+        let video_subsystem = sdl_context
+            .video()
+            .expect("Could not get SDL video context.");
         let size = ({
-            let bounds = video_subsystem.display_bounds(0).unwrap();
+            let bounds = video_subsystem
+                .display_bounds(0)
+                .expect("Could not get SDL display bounds.");
             cmp::max(bounds.w, bounds.h)
-        } as f32 * 0.6) as u32;
+        } as f32
+            * 0.6) as u32;
         let window = video_subsystem
             .window("Game of Life", size, size)
             .position_centered()
             .build()
-            .unwrap();
-        let canvas = window.into_canvas().build().unwrap();
+            .expect("Could not build SDL window.");
+        let canvas = window
+            .into_canvas()
+            .build()
+            .expect("Could not get SDL window canvas.");
         Self {
             sdl_context,
-            window_size : size,
+            window_size: size,
             canvas,
         }
     }
@@ -54,13 +61,14 @@ impl Engine {
                 if let CellStatus::ALIVE = cell.current_state {
                     let x0 = column_index as i32 * cell_side_size as i32;
                     let y0 = cell_index as i32 * cell_side_size as i32;
-                    self.canvas.fill_rect(
-                        Rect::new(
+                    self.canvas
+                        .fill_rect(Rect::new(
                             x0 as i32,
                             y0 as i32,
                             cell_side_size,
-                            cell_side_size)
-                    ).expect("Could not draw rect");
+                            cell_side_size,
+                        ))
+                        .expect("Could not draw rect");
                 }
             }
         }
@@ -68,23 +76,29 @@ impl Engine {
         self.canvas.set_draw_color(Color::BLACK);
         for i in 0..game.grid().len() {
             let p = i as i32 * cell_side_size as i32;
-            self.canvas.draw_line(
-                (p, 0),
-                (p, self.window_size as i32)
-            ).expect("Could not draw line");
-            self.canvas.draw_line(
-                (0, p),
-                (self.window_size as i32, p)
-            ).expect("Could not draw line");
+            self.canvas
+                .draw_line((p, 0), (p, self.window_size as i32))
+                .expect("Could not draw line");
+            self.canvas
+                .draw_line((0, p), (self.window_size as i32, p))
+                .expect("Could not draw line");
         }
         self.canvas.present();
     }
 
     pub fn exit(&self) -> bool {
-        let mut event_pump = self.sdl_context.event_pump().unwrap();
+        let mut event_pump = self
+            .sdl_context
+            .event_pump()
+            .expect("Could not get SDL event pump.");
         for event in event_pump.poll_iter() {
-            if let Event::Quit { .. } | Event::KeyDown { keycode: Some(Keycode::Escape), .. } = event {
-                return true
+            if let Event::Quit { .. }
+            | Event::KeyDown {
+                keycode: Some(Keycode::Escape),
+                ..
+            } = event
+            {
+                return true;
             }
         }
         false

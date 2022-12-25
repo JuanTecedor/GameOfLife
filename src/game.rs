@@ -3,7 +3,7 @@ use crate::cell::{Cell, CellStatus};
 type GridType = Vec<Vec<Cell>>;
 
 pub struct Game {
-    grid : GridType,
+    grid: GridType,
 }
 
 impl Game {
@@ -11,29 +11,70 @@ impl Game {
         for col in &grid {
             debug_assert!(col.len() == grid.len());
         }
-        Self {
-            grid : grid,
-        }
+        Self { grid: grid }
     }
 
     pub fn new_test_1() -> Self {
         let grid_side: usize = 32;
-        let mut grid = vec![vec![Cell{current_state: CellStatus::DEAD, next_state: CellStatus::DEAD}; grid_side]; grid_side];
-        grid[1][1] = Cell{current_state: CellStatus::ALIVE, next_state: CellStatus::DEAD};
-        grid[1][2] = Cell{current_state: CellStatus::ALIVE, next_state: CellStatus::DEAD};
-        grid[2][1] = Cell{current_state: CellStatus::ALIVE, next_state: CellStatus::DEAD};
-        grid[2][2] = Cell{current_state: CellStatus::ALIVE, next_state: CellStatus::DEAD};
-        grid[10][11] = Cell{current_state: CellStatus::ALIVE, next_state: CellStatus::DEAD};
-        grid[10][12] = Cell{current_state: CellStatus::ALIVE, next_state: CellStatus::DEAD};
-        grid[10][13] = Cell{current_state: CellStatus::ALIVE, next_state: CellStatus::DEAD};
+        let mut grid = vec![
+            vec![
+                Cell {
+                    current_state: CellStatus::DEAD,
+                    next_state: CellStatus::DEAD
+                };
+                grid_side
+            ];
+            grid_side
+        ];
+        grid[1][1] = Cell {
+            current_state: CellStatus::ALIVE,
+            next_state: CellStatus::DEAD,
+        };
+        grid[1][2] = Cell {
+            current_state: CellStatus::ALIVE,
+            next_state: CellStatus::DEAD,
+        };
+        grid[2][1] = Cell {
+            current_state: CellStatus::ALIVE,
+            next_state: CellStatus::DEAD,
+        };
+        grid[2][2] = Cell {
+            current_state: CellStatus::ALIVE,
+            next_state: CellStatus::DEAD,
+        };
+        grid[10][11] = Cell {
+            current_state: CellStatus::ALIVE,
+            next_state: CellStatus::DEAD,
+        };
+        grid[10][12] = Cell {
+            current_state: CellStatus::ALIVE,
+            next_state: CellStatus::DEAD,
+        };
+        grid[10][13] = Cell {
+            current_state: CellStatus::ALIVE,
+            next_state: CellStatus::DEAD,
+        };
         Self::new(grid)
     }
 
     pub fn new_random(size: usize) -> Self {
-        let mut grid = vec![vec![Cell{current_state: CellStatus::DEAD, next_state: CellStatus::DEAD}; size]; size];
+        let mut grid = vec![
+            vec![
+                Cell {
+                    current_state: CellStatus::DEAD,
+                    next_state: CellStatus::DEAD
+                };
+                size
+            ];
+            size
+        ];
         for col in &mut grid {
             for cell in col {
-                cell.current_state = if rand::random() { CellStatus::DEAD } else { CellStatus::ALIVE };
+                cell.current_state = if rand::random() {
+                    CellStatus::DEAD
+                } else {
+                    CellStatus::ALIVE
+                };
             }
         }
         Self::new(grid)
@@ -44,15 +85,19 @@ impl Game {
     }
 
     fn neighbours(&self, x: usize, y: usize) -> u32 {
-        let mut count : u32 = 0;
+        let mut count: u32 = 0;
         for i in -1..2_i32 {
             for j in -1..2_i32 {
                 if !(i == 0 && j == 0) {
                     let xx = x as i32 + i;
                     let yy = y as i32 + j;
-                    if xx > 0 && xx < self.grid.len() as i32
-                        && yy > 0 && yy < self.grid.len() as i32 {
-                        if let CellStatus::ALIVE = self.grid[xx as usize][yy as usize].current_state {
+                    if xx > 0
+                        && xx < self.grid.len() as i32
+                        && yy > 0
+                        && yy < self.grid.len() as i32
+                    {
+                        if let CellStatus::ALIVE = self.grid[xx as usize][yy as usize].current_state
+                        {
                             count += 1;
                         }
                     }
@@ -68,12 +113,10 @@ impl Game {
                 let neighbours = self.neighbours(i, j);
                 if neighbours == 3 {
                     self.grid[i][j].next_state = CellStatus::ALIVE
-                }
-                else if neighbours == 2 {
+                } else if neighbours == 2 {
                     let mut cell = &mut self.grid[i][j];
                     cell.next_state = cell.current_state
-                }
-                else {
+                } else {
                     self.grid[i][j].next_state = CellStatus::DEAD
                 }
             }

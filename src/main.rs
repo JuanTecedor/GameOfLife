@@ -1,6 +1,6 @@
+mod cell;
 mod engine;
 mod game;
-mod cell;
 
 use std::time::{Duration, Instant};
 
@@ -19,8 +19,8 @@ fn main() {
 }
 
 fn cap_fps(timepoint: &Instant) {
-    const MAX_FPS : f32 = 5.0;
-    const MS_PER_FRAME : u128 = (1000.0 / MAX_FPS) as u128;
+    const MAX_FPS: f32 = 5.0;
+    const MS_PER_FRAME: u128 = (1000.0 / MAX_FPS) as u128;
     let delta = timepoint.elapsed().as_millis();
     if delta < MS_PER_FRAME {
         let remaining_time = MS_PER_FRAME - delta;
