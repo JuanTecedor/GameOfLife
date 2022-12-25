@@ -9,7 +9,7 @@ pub struct Game {
 impl Game {
     pub fn new(grid: GridType) -> Self {
         for col in &grid {
-            assert!(col.len() == grid.len());
+            debug_assert!(col.len() == grid.len());
         }
         Self {
             grid : grid,
