@@ -14,49 +14,6 @@ impl Game {
         Self { grid: grid }
     }
 
-    pub fn new_test_1() -> Self {
-        let grid_side: usize = 32;
-        let mut grid = vec![
-            vec![
-                Cell {
-                    current_state: CellStatus::DEAD,
-                    next_state: CellStatus::DEAD
-                };
-                grid_side
-            ];
-            grid_side
-        ];
-        grid[1][1] = Cell {
-            current_state: CellStatus::ALIVE,
-            next_state: CellStatus::DEAD,
-        };
-        grid[1][2] = Cell {
-            current_state: CellStatus::ALIVE,
-            next_state: CellStatus::DEAD,
-        };
-        grid[2][1] = Cell {
-            current_state: CellStatus::ALIVE,
-            next_state: CellStatus::DEAD,
-        };
-        grid[2][2] = Cell {
-            current_state: CellStatus::ALIVE,
-            next_state: CellStatus::DEAD,
-        };
-        grid[10][11] = Cell {
-            current_state: CellStatus::ALIVE,
-            next_state: CellStatus::DEAD,
-        };
-        grid[10][12] = Cell {
-            current_state: CellStatus::ALIVE,
-            next_state: CellStatus::DEAD,
-        };
-        grid[10][13] = Cell {
-            current_state: CellStatus::ALIVE,
-            next_state: CellStatus::DEAD,
-        };
-        Self::new(grid)
-    }
-
     pub fn new_random(size: usize) -> Self {
         let mut grid = vec![
             vec![
@@ -111,13 +68,13 @@ impl Game {
         for i in 0..self.grid.len() {
             for j in 0..self.grid.len() {
                 let neighbours = self.neighbours(i, j);
+                let mut cell = &mut self.grid[i][j];
                 if neighbours == 3 {
-                    self.grid[i][j].next_state = CellStatus::ALIVE
+                    cell.next_state = CellStatus::ALIVE
                 } else if neighbours == 2 {
-                    let mut cell = &mut self.grid[i][j];
                     cell.next_state = cell.current_state
                 } else {
-                    self.grid[i][j].next_state = CellStatus::DEAD
+                    cell.next_state = CellStatus::DEAD
                 }
             }
         }
