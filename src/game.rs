@@ -67,8 +67,8 @@ impl Game {
                 if neighbours == 3 {
                     cell.set_next_state(CellStatus::ALIVE);
                 } else if neighbours == 2 {
-                    // This line is not strictly needed if the next and current cell state
-                    // on initiation is the same.
+                    // This line may not be strictly needed if the next and
+                    // current cell state for each cell on initiation is the same.
                     cell.set_next_state(cell.current_state());
                 } else {
                     cell.set_next_state(CellStatus::DEAD);

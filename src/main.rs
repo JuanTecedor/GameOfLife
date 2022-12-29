@@ -12,9 +12,10 @@ use crate::game::Game;
 fn main() {
     let mut engine = Engine::new();
     let mut game = Game::new_random_default_size();
+    let mut fps_limiter = FpsLimiter::new(60.0);
 
     while engine.run() {
-        let fps_limiter = FpsLimiter::new(60.0);
+        fps_limiter.start();
         step_game(&mut engine, &mut game);
         fps_limiter.wait();
     }

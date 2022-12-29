@@ -13,6 +13,10 @@ impl FpsLimiter {
         }
     }
 
+    pub fn start(&mut self) {
+        self.timepoint = Instant::now();
+    }
+
     pub fn wait(&self) {
         let ms_per_frame: u128 = (1000.0 / self.max_fps) as u128;
         let delta = self.timepoint.elapsed().as_millis();
