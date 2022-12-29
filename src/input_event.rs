@@ -1,6 +1,6 @@
 pub enum InputEvent {
-    QUIT,
-    STEP,
-    TOGGLE_AUTOSTEP,
-    RESET,
+    Quit,
+    Step,
+    ToggleAutostep,
+    Reset,
 }

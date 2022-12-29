@@ -6,7 +6,7 @@ extern crate sdl2;
 
 use sdl2::{
     event::Event, keyboard::Keycode, pixels::Color, rect::Rect, render::Canvas, video::Window,
-    EventPump, Sdl,
+    Sdl,
 };
 use std::cmp;
 
@@ -100,23 +100,23 @@ impl Engine {
             match event {
                 Event::KeyUp { keycode, .. } => match keycode {
                     Some(Keycode::Escape) | Some(Keycode::Q) => {
-                        processed_events.push(InputEvent::QUIT);
+                        processed_events.push(InputEvent::Quit);
                         return processed_events;
                     }
                     Some(Keycode::Space) => {
                         self.autostep ^= true;
-                        processed_events.push(InputEvent::TOGGLE_AUTOSTEP);
+                        processed_events.push(InputEvent::ToggleAutostep);
                     }
                     Some(Keycode::S) => {
-                        processed_events.push(InputEvent::STEP);
+                        processed_events.push(InputEvent::Step);
                     }
                     Some(Keycode::R) => {
-                        processed_events.push(InputEvent::RESET);
+                        processed_events.push(InputEvent::Reset);
                     }
                     _ => {}
                 },
                 Event::Quit { .. } => {
-                    processed_events.push(InputEvent::QUIT);
+                    processed_events.push(InputEvent::Quit);
                     return processed_events;
                 }
                 _ => {}

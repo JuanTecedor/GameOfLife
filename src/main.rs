@@ -19,16 +19,16 @@ fn main() {
         let t0 = Instant::now();
         for event in engine.handle_events() {
             match event {
-                InputEvent::QUIT => {
+                InputEvent::Quit => {
                     break 'main_game_loop;
                 }
-                InputEvent::STEP => {
+                InputEvent::Step => {
                     engine.update_game(&mut game);
                 }
-                InputEvent::RESET => {
+                InputEvent::Reset => {
                     game = Game::new_random(game_size);
                 }
-                InputEvent::TOGGLE_AUTOSTEP => {}
+                InputEvent::ToggleAutostep => {}
             }
         }
         if engine.autostep() {
