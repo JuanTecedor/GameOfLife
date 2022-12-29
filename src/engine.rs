@@ -1,10 +1,12 @@
 use crate::cell::CellStatus;
 use crate::game::Game;
+use crate::input_event::InputEvent;
 
 extern crate sdl2;
 
 use sdl2::{
-    event::Event, keyboard::Keycode, pixels::Color, rect::Rect, render::Canvas, video::Window, Sdl,
+    event::Event, keyboard::Keycode, pixels::Color, rect::Rect, render::Canvas, video::Window,
+    EventPump, Sdl,
 };
 use std::cmp;
 
@@ -12,6 +14,7 @@ pub struct Engine {
     sdl_context: Sdl,
     window_size: u32,
     canvas: Canvas<Window>,
+    autostep: bool,
 }
 
 impl Engine {
@@ -40,6 +43,7 @@ impl Engine {
             sdl_context,
             window_size: size,
             canvas,
+            autostep: false,
         }
     }
 
@@ -86,21 +90,42 @@ impl Engine {
         self.canvas.present();
     }
 
-    pub fn exit(&self) -> bool {
+    pub fn handle_events(&mut self) -> Vec<InputEvent> {
         let mut event_pump = self
             .sdl_context
             .event_pump()
             .expect("Could not get SDL event pump.");
+        let mut processed_events = Vec::new();
         for event in event_pump.poll_iter() {
-            if let Event::Quit { .. }
-            | Event::KeyDown {
-                keycode: Some(Keycode::Escape),
-                ..
-            } = event
-            {
-                return true;
+            match event {
+                Event::KeyUp { keycode, .. } => match keycode {
+                    Some(Keycode::Escape) => {
+                        processed_events.push(InputEvent::QUIT);
+                        return processed_events;
+                    }
+                    Some(Keycode::Space) => {
+                        self.autostep ^= true;
+                        processed_events.push(InputEvent::TOGGLE_AUTOSTEP);
+                    }
+                    Some(Keycode::S) => {
+                        processed_events.push(InputEvent::STEP);
+                    }
+                    Some(Keycode::R) => {
+                        processed_events.push(InputEvent::RESET);
+                    }
+                    _ => {}
+                },
+                Event::Quit { .. } => {
+                    processed_events.push(InputEvent::QUIT);
+                    return processed_events;
+                }
+                _ => {}
             }
         }
-        false
+        processed_events
+    }
+
+    pub fn autostep(&self) -> bool {
+        self.autostep
     }
 }
