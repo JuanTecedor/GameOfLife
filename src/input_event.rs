@@ -3,5 +3,4 @@ pub enum InputEvent {
     STEP,
     TOGGLE_AUTOSTEP,
     RESET,
-    IGNORE,
 }

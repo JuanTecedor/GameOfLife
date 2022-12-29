@@ -28,7 +28,7 @@ fn main() {
                 InputEvent::RESET => {
                     game = Game::new_random(game_size);
                 }
-                InputEvent::TOGGLE_AUTOSTEP | InputEvent::IGNORE => {}
+                InputEvent::TOGGLE_AUTOSTEP => {}
             }
         }
         if engine.autostep() {

@@ -99,7 +99,7 @@ impl Engine {
         for event in event_pump.poll_iter() {
             match event {
                 Event::KeyUp { keycode, .. } => match keycode {
-                    Some(Keycode::Escape) => {
+                    Some(Keycode::Escape) | Some(Keycode::Q) => {
                         processed_events.push(InputEvent::QUIT);
                         return processed_events;
                     }
