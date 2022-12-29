@@ -12,6 +12,7 @@ pub struct Engine {
     sdl_context: Sdl,
     window_size: u32,
     canvas: Canvas<Window>,
+    run: bool,
     autostep: bool,
 }
 
@@ -29,7 +30,11 @@ impl Engine {
         } as f32
             * 0.6) as u32;
         let window = video_subsystem
-            .window("Game of Life", size, size)
+            .window(
+                "Game of Life | [Q, ESQ] To quit | [R] Reset | [S] Step | [SPACE] Toggle autostep",
+                size,
+                size,
+            )
             .position_centered()
             .build()
             .expect("Could not build SDL window.");
@@ -41,6 +46,7 @@ impl Engine {
             sdl_context,
             window_size: size,
             canvas,
+            run: true,
             autostep: false,
         }
     }
@@ -88,39 +94,38 @@ impl Engine {
         self.canvas.present();
     }
 
-    pub fn handle_events(&mut self) -> Vec<InputEvent> {
+    pub fn handle_events(&mut self, game: &mut Game) {
         let mut event_pump = self
             .sdl_context
             .event_pump()
             .expect("Could not get SDL event pump.");
-        let mut processed_events = Vec::new();
         for event in event_pump.poll_iter() {
             match event {
                 Event::KeyUp { keycode, .. } => match keycode {
                     Some(Keycode::Escape) | Some(Keycode::Q) => {
-                        processed_events.push(InputEvent::Quit);
-                        return processed_events;
+                        self.run = false;
                     }
                     Some(Keycode::Space) => {
                         self.autostep ^= true;
-                        processed_events.push(InputEvent::ToggleAutostep);
                     }
                     Some(Keycode::S) => {
-                        processed_events.push(InputEvent::Step);
+                        self.update_game(game);
                     }
                     Some(Keycode::R) => {
-                        processed_events.push(InputEvent::Reset);
+                        *game = Game::new_random_default_size();
                     }
                     _ => {}
                 },
                 Event::Quit { .. } => {
-                    processed_events.push(InputEvent::Quit);
-                    return processed_events;
+                    self.run = false;
                 }
                 _ => {}
             }
         }
-        processed_events
+    }
+
+    pub fn run(&self) -> bool {
+        self.run
     }
 
     pub fn autostep(&self) -> bool {

@@ -7,11 +7,17 @@ pub struct Game {
 }
 
 impl Game {
+    const DEFAULT_GAME_SIZE: usize = 128;
+
     fn new(grid: GridType) -> Self {
         for col in &grid {
             debug_assert!(col.len() == grid.len());
         }
         Self { grid: grid }
+    }
+
+    pub fn new_random_default_size() -> Self {
+        Self::new_random(Game::DEFAULT_GAME_SIZE)
     }
 
     pub fn new_random(size: usize) -> Self {
