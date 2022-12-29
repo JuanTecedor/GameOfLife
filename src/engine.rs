@@ -1,4 +1,3 @@
-use crate::input_event::InputEvent;
 use crate::{cell_status::CellStatus, game::Game};
 
 extern crate sdl2;

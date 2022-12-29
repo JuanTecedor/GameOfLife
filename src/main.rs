@@ -3,7 +3,6 @@ mod cell_status;
 mod engine;
 mod fps_limiter;
 mod game;
-mod input_event;
 
 use fps_limiter::FpsLimiter;
 
