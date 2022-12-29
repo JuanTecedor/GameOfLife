@@ -1,4 +1,5 @@
 mod cell;
+mod cell_status;
 mod engine;
 mod game;
 mod input_event;
@@ -14,7 +15,7 @@ fn main() {
     let game_size = 128;
     let mut engine = Engine::new();
     let mut game = Game::new_random(game_size);
-    engine.draw_game(&game);
+
     'main_game_loop: loop {
         let t0 = Instant::now();
         for event in engine.handle_events() {

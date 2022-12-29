@@ -1,12 +1,10 @@
-use crate::cell::CellStatus;
-use crate::game::Game;
 use crate::input_event::InputEvent;
+use crate::{cell_status::CellStatus, game::Game};
 
 extern crate sdl2;
 
 use sdl2::{
-    event::Event, keyboard::Keycode, pixels::Color, rect::Rect, render::Canvas, video::Window,
-    Sdl,
+    event::Event, keyboard::Keycode, pixels::Color, rect::Rect, render::Canvas, video::Window, Sdl,
 };
 use std::cmp;
 
@@ -62,7 +60,7 @@ impl Engine {
         self.canvas.set_draw_color(Color::RED);
         for (column_index, column) in game.grid().iter().enumerate() {
             for (cell_index, cell) in column.iter().enumerate() {
-                if let CellStatus::ALIVE = cell.current_state {
+                if let CellStatus::ALIVE = cell.current_state() {
                     let x0 = column_index as i32 * cell_side_size as i32;
                     let y0 = cell_index as i32 * cell_side_size as i32;
                     self.canvas

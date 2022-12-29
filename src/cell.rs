@@ -1,11 +1,36 @@
-#[derive(Copy, Clone)]
-pub enum CellStatus {
-    ALIVE,
-    DEAD,
-}
+use crate::cell_status::CellStatus;
 
 #[derive(Copy, Clone)]
 pub struct Cell {
-    pub current_state: CellStatus,
-    pub next_state: CellStatus,
+    current_state: CellStatus,
+    next_state: CellStatus,
+}
+
+impl Cell {
+    pub fn new(cell_status: CellStatus) -> Self {
+        Self {
+            current_state: cell_status,
+            next_state: cell_status,
+        }
+    }
+
+    pub fn new_random() -> Self {
+        Self::new(if rand::random() {
+            CellStatus::ALIVE
+        } else {
+            CellStatus::DEAD
+        })
+    }
+
+    pub fn set_next_state(&mut self, next_state: CellStatus) {
+        self.next_state = next_state;
+    }
+
+    pub fn current_state(&self) -> CellStatus {
+        self.current_state
+    }
+
+    pub fn update(&mut self) {
+        self.current_state = self.next_state;
+    }
 }

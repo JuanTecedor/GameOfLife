@@ -1,4 +1,4 @@
-use crate::cell::{Cell, CellStatus};
+use crate::{cell::Cell, cell_status::CellStatus};
 
 type GridType = Vec<Vec<Cell>>;
 
@@ -7,7 +7,7 @@ pub struct Game {
 }
 
 impl Game {
-    pub fn new(grid: GridType) -> Self {
+    fn new(grid: GridType) -> Self {
         for col in &grid {
             debug_assert!(col.len() == grid.len());
         }
@@ -15,23 +15,11 @@ impl Game {
     }
 
     pub fn new_random(size: usize) -> Self {
-        let mut grid = vec![
-            vec![
-                Cell {
-                    current_state: CellStatus::DEAD,
-                    next_state: CellStatus::DEAD
-                };
-                size
-            ];
-            size
-        ];
-        for col in &mut grid {
-            for cell in col {
-                cell.current_state = if rand::random() {
-                    CellStatus::DEAD
-                } else {
-                    CellStatus::ALIVE
-                };
+        let mut grid: Vec<Vec<Cell>> = Vec::with_capacity(size);
+        for row in 0..size {
+            grid.push(Vec::with_capacity(size));
+            for _ in 0..size {
+                grid[row].push(Cell::new_random());
             }
         }
         Self::new(grid)
@@ -53,7 +41,8 @@ impl Game {
                         && yy > 0
                         && yy < self.grid.len() as i32
                     {
-                        if let CellStatus::ALIVE = self.grid[xx as usize][yy as usize].current_state
+                        if let CellStatus::ALIVE =
+                            self.grid[xx as usize][yy as usize].current_state()
                         {
                             count += 1;
                         }
@@ -68,13 +57,15 @@ impl Game {
         for i in 0..self.grid.len() {
             for j in 0..self.grid.len() {
                 let neighbours = self.neighbours(i, j);
-                let mut cell = &mut self.grid[i][j];
+                let cell = &mut self.grid[i][j];
                 if neighbours == 3 {
-                    cell.next_state = CellStatus::ALIVE
+                    cell.set_next_state(CellStatus::ALIVE);
                 } else if neighbours == 2 {
-                    cell.next_state = cell.current_state
+                    // This line is not strictly needed if the next and current cell state
+                    // on initiation is the same.
+                    cell.set_next_state(cell.current_state());
                 } else {
-                    cell.next_state = CellStatus::DEAD
+                    cell.set_next_state(CellStatus::DEAD);
                 }
             }
         }
@@ -83,8 +74,7 @@ impl Game {
     pub fn update_cells(&mut self) {
         for i in 0..self.grid.len() {
             for j in 0..self.grid.len() {
-                let mut cell = &mut self.grid[i][j];
-                cell.current_state = cell.next_state;
+                self.grid[i][j].update();
             }
         }
     }
