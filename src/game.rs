@@ -1,6 +1,6 @@
 use crate::{cell::Cell, cell_status::CellStatus};
 
-type GridType = Vec<Vec<Cell>>;
+pub type GridType = Vec<Vec<Cell>>;
 
 pub struct Game {
     grid: GridType,
@@ -9,11 +9,20 @@ pub struct Game {
 impl Game {
     const DEFAULT_GAME_SIZE: usize = 128;
 
-    fn new(grid: GridType) -> Self {
+    pub fn new(grid: GridType) -> Self {
         for col in &grid {
             debug_assert!(col.len() == grid.len());
         }
         Self { grid: grid }
+    }
+
+    pub fn new_empty_default_size() -> Self {
+        Self {
+            grid: vec![
+                vec![Cell::new(CellStatus::DEAD); Game::DEFAULT_GAME_SIZE];
+                Game::DEFAULT_GAME_SIZE
+            ],
+        }
     }
 
     pub fn new_random_default_size() -> Self {
@@ -83,5 +92,21 @@ impl Game {
                 self.grid[i][j].update();
             }
         }
+    }
+
+    pub fn set_cell_alive(&mut self, i: usize, j: usize) {
+        if i < self.grid.len() && j < self.grid[i].len() {
+            self.grid[i][j].set_cell_alive();
+        }
+    }
+
+    pub fn set_cell_dead(&mut self, i: usize, j: usize) {
+        if i < self.grid.len() && j < self.grid[i].len() {
+            self.grid[i][j].set_cell_dead();
+        }
+    }
+
+    pub fn game_side(&self) -> usize {
+        self.grid().len()
     }
 }

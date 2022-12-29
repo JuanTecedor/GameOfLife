@@ -26,6 +26,16 @@ impl Cell {
         self.next_state = next_state;
     }
 
+    pub fn set_cell_alive(&mut self) {
+        self.current_state = CellStatus::ALIVE;
+        self.next_state = CellStatus::ALIVE;
+    }
+
+    pub fn set_cell_dead(&mut self) {
+        self.current_state = CellStatus::DEAD;
+        self.next_state = CellStatus::DEAD;
+    }
+
     pub fn current_state(&self) -> CellStatus {
         self.current_state
     }
