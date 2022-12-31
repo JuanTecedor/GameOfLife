@@ -48,7 +48,6 @@ impl Engine {
     }
 
     pub fn update_game(&self, game: &mut Game) {
-        game.calculate_next_cell_status();
         game.update_cells();
     }
 
@@ -160,11 +159,15 @@ impl Engine {
 
     fn handle_click(&self, left_click: bool, game: &mut Game, x: i32, y: i32) {
         let cell_side_size = self.window_size as usize / game.game_side() as usize;
-        if left_click {
-            game.set_cell_alive(y as usize / cell_side_size, x as usize / cell_side_size);
-        } else {
-            game.set_cell_dead(y as usize / cell_side_size, x as usize / cell_side_size);
-        }
+        game.set_current_state(
+            y as usize / cell_side_size,
+            x as usize / cell_side_size,
+            if left_click {
+                CellStatus::ALIVE
+            } else {
+                CellStatus::DEAD
+            },
+        );
     }
 
     pub fn run(&self) -> bool {

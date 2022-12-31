@@ -44,7 +44,7 @@ impl Game {
         &self.grid
     }
 
-    fn neighbours(&self, x: usize, y: usize) -> u32 {
+    fn count_neighbours(&self, x: usize, y: usize) -> u32 {
         let mut count: u32 = 0;
         for i in -1..2_i32 {
             for j in -1..2_i32 {
@@ -56,8 +56,7 @@ impl Game {
                         && yy > 0
                         && yy < self.grid.len() as i32
                     {
-                        if let CellStatus::ALIVE =
-                            self.grid[xx as usize][yy as usize].current_state()
+                        if self.grid[xx as usize][yy as usize].current_state() == CellStatus::ALIVE
                         {
                             count += 1;
                         }
@@ -68,16 +67,14 @@ impl Game {
         count
     }
 
-    pub fn calculate_next_cell_status(&mut self) {
+    fn calculate_next_cell_status(&mut self) {
         for i in 0..self.grid.len() {
             for j in 0..self.grid.len() {
-                let neighbours = self.neighbours(i, j);
+                let neighbours = self.count_neighbours(i, j);
                 let cell = &mut self.grid[i][j];
                 if neighbours == 3 {
                     cell.set_next_state(CellStatus::ALIVE);
                 } else if neighbours == 2 {
-                    // This line may not be strictly needed if the next and
-                    // current cell state for each cell on initiation is the same.
                     cell.set_next_state(cell.current_state());
                 } else {
                     cell.set_next_state(CellStatus::DEAD);
@@ -87,6 +84,7 @@ impl Game {
     }
 
     pub fn update_cells(&mut self) {
+        self.calculate_next_cell_status();
         for i in 0..self.grid.len() {
             for j in 0..self.grid.len() {
                 self.grid[i][j].update();
@@ -94,15 +92,9 @@ impl Game {
         }
     }
 
-    pub fn set_cell_alive(&mut self, i: usize, j: usize) {
-        if i < self.grid.len() && j < self.grid[i].len() {
-            self.grid[i][j].set_cell_alive();
-        }
-    }
-
-    pub fn set_cell_dead(&mut self, i: usize, j: usize) {
-        if i < self.grid.len() && j < self.grid[i].len() {
-            self.grid[i][j].set_cell_dead();
+    pub fn set_current_state(&mut self, i: usize, j: usize, next_state: CellStatus) {
+        if i < self.game_side() && j < self.game_side() {
+            self.grid[i][j].set_current_state(next_state);
         }
     }
 

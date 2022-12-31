@@ -9,7 +9,7 @@ use crate::{cell::Cell, cell_status::CellStatus, game::GridType};
 pub fn load_level() -> Result<GridType, Error> {
     let path = Path::new("data").join("example.txt");
     match File::open(path) {
-        Err(e) => return Result::Err(e),
+        Err(e) => Result::Err(e),
         Ok(file) => {
             let mut grid: GridType = vec![];
             let lines = io::BufReader::new(file).lines();
@@ -28,7 +28,7 @@ pub fn load_level() -> Result<GridType, Error> {
                     grid.push(row);
                 }
             }
-            return Ok(grid);
+            Ok(grid)
         }
     }
 }
