@@ -1,11 +1,12 @@
-use crate::{cell_status::CellStatus, game::Game, level_loader::load_level};
+use crate::{
+    cell_status::CellStatus,
+    game::Game,
+    input_handler::{handle_key_up, handle_mouse_event},
+};
 
 extern crate sdl2;
 
-use sdl2::{
-    event::Event, keyboard::Keycode, mouse::MouseButton, pixels::Color, rect::Rect, render::Canvas,
-    video::Window, Sdl,
-};
+use sdl2::{event::Event, pixels::Color, rect::Rect, render::Canvas, video::Window, Sdl};
 use std::cmp;
 
 pub struct Engine {
@@ -106,68 +107,23 @@ impl Engine {
             .expect("Could not get SDL event pump.");
         for event in event_pump.poll_iter() {
             match event {
-                Event::KeyUp { keycode, .. } => match keycode {
-                    Some(Keycode::Escape) | Some(Keycode::Q) => {
-                        self.run = false;
-                    }
-                    Some(Keycode::Space) => {
-                        self.autostep ^= true;
-                    }
-                    Some(Keycode::S) => {
-                        self.update_game(game);
-                    }
-                    Some(Keycode::Num1) => {
-                        *game = Game::new_empty_default_size();
-                    }
-                    Some(Keycode::Num2) => {
-                        *game = Game::new_random_default_size();
-                    }
-                    Some(Keycode::Num3) => {
-                        if let Ok(level) = load_level() {
-                            *game = Game::new(level);
-                        }
-                    }
-                    _ => {}
-                },
+                Event::KeyUp { .. } => {
+                    handle_key_up(self, game, event);
+                }
                 Event::Quit { .. } => {
-                    self.run = false;
+                    self.stop();
+                    return;
                 }
-                Event::MouseMotion {
-                    mousestate, x, y, ..
-                } => {
-                    if mousestate.left() {
-                        self.handle_click(true, game, x, y);
-                    } else if mousestate.right() {
-                        self.handle_click(false, game, x, y);
-                    }
+                Event::MouseMotion { .. } | Event::MouseButtonDown { .. } => {
+                    handle_mouse_event(self, game, event);
                 }
-                Event::MouseButtonDown {
-                    mouse_btn, x, y, ..
-                } => match mouse_btn {
-                    MouseButton::Left => {
-                        self.handle_click(true, game, x, y);
-                    }
-                    MouseButton::Right => {
-                        self.handle_click(false, game, x, y);
-                    }
-                    _ => {}
-                },
                 _ => {}
             }
         }
     }
 
-    fn handle_click(&self, left_click: bool, game: &mut Game, x: i32, y: i32) {
-        let cell_side_size = self.window_size as usize / game.game_side() as usize;
-        game.set_current_state(
-            y as usize / cell_side_size,
-            x as usize / cell_side_size,
-            if left_click {
-                CellStatus::ALIVE
-            } else {
-                CellStatus::DEAD
-            },
-        );
+    pub fn window_size(&self) -> u32 {
+        self.window_size
     }
 
     pub fn run(&self) -> bool {
@@ -176,5 +132,13 @@ impl Engine {
 
     pub fn autostep(&self) -> bool {
         self.autostep
+    }
+
+    pub fn toggle_autostep(&mut self) {
+        self.autostep ^= true;
+    }
+
+    pub fn stop(&mut self) {
+        self.run = false;
     }
 }
