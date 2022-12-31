@@ -1,3 +1,7 @@
+use engine::Engine;
+use fps_limiter::FpsLimiter;
+use game::Game;
+
 mod cell;
 mod cell_status;
 mod engine;
@@ -5,11 +9,7 @@ mod fps_limiter;
 mod game;
 mod input_handler;
 mod level_loader;
-
-use fps_limiter::FpsLimiter;
-
-use crate::engine::Engine;
-use crate::game::Game;
+mod command;
 
 fn main() {
     let mut engine = Engine::new();
