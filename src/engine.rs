@@ -48,10 +48,6 @@ impl Engine {
         }
     }
 
-    pub fn update_game(&self, game: &mut Game) {
-        game.update_cells();
-    }
-
     pub fn draw_game(&mut self, game: &Game) {
         let cell_side_count = game.game_side();
         let cell_side_size = self.window_size as f32 / cell_side_count as f32;

@@ -83,7 +83,7 @@ impl Game {
         }
     }
 
-    pub fn update_cells(&mut self) {
+    pub fn update(&mut self) {
         self.calculate_next_cell_status();
         for i in 0..self.grid.len() {
             for j in 0..self.grid.len() {

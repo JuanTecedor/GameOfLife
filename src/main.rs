@@ -26,7 +26,7 @@ fn main() {
 fn step_game(engine: &mut Engine, game: &mut Game) {
     engine.handle_events(game);
     if engine.autostep() {
-        engine.update_game(game);
+        game.update();
     }
     engine.draw_game(game);
 }
