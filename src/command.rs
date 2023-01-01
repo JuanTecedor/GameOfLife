@@ -7,9 +7,9 @@ pub enum Command {
     LoadRandomGame,
     LoadEmptyGame,
     LoadExample,
-    SetCellCommand{
+    SetCellCommand {
         new_status: CellStatus,
         grid_x: usize,
         grid_y: usize,
-    }
+    },
 }

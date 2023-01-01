@@ -1,11 +1,11 @@
 use crate::{
-    cell_status::CellStatus,
-    game::Game, input_handler::handle_sdl_events, command::Command,
+    cell_status::CellStatus, command::Command, game::Game, input_handler::handle_sdl_events,
+    level_loader::load_level,
 };
 
 extern crate sdl2;
 
-use sdl2::{event::Event, pixels::Color, rect::Rect, render::Canvas, video::Window, Sdl};
+use sdl2::{pixels::Color, rect::Rect, render::Canvas, video::Window, Sdl};
 use std::cmp;
 
 pub struct Engine {
@@ -14,6 +14,7 @@ pub struct Engine {
     canvas: Canvas<Window>,
     run: bool,
     autostep: bool,
+    game: Game,
 }
 
 impl Engine {
@@ -44,18 +45,23 @@ impl Engine {
             canvas,
             run: true,
             autostep: false,
+            game: Game::new_random_default_size(),
         }
     }
 
-    pub fn draw_game(&mut self, game: &Game) {
-        let cell_side_count = game.game_side();
+    pub fn update(&mut self) {
+        self.game.update();
+    }
+
+    pub fn draw_game(&mut self) {
+        let cell_side_count = self.game.game_side();
         let cell_side_size = self.window_size as f32 / cell_side_count as f32;
 
         self.canvas.set_draw_color(Color::WHITE);
         self.canvas.clear();
 
         self.canvas.set_draw_color(Color::RED);
-        for (column_index, column) in game.grid().iter().enumerate() {
+        for (column_index, column) in self.game.grid().iter().enumerate() {
             for (cell_index, cell) in column.iter().enumerate() {
                 if let CellStatus::ALIVE = cell.current_state() {
                     let x0 = cell_index as f32 * cell_side_size;
@@ -83,7 +89,7 @@ impl Engine {
         }
 
         self.canvas.set_draw_color(Color::BLACK);
-        for i in 0..game.grid().len() {
+        for i in 0..self.game.grid().len() {
             let p = i as f32 * cell_side_size;
             self.canvas
                 .draw_line((p as i32, 0), (p as i32, self.window_size as i32))
@@ -95,30 +101,36 @@ impl Engine {
         self.canvas.present();
     }
 
-    pub fn handle_events(&self, game: &Game) {
-        let commands = handle_sdl_events(&self.sdl_context, self, game);
+    pub fn handle_events(&mut self) {
+        let commands = handle_sdl_events(&self.sdl_context, self, &self.game);
         for command in commands {
             match command {
                 Command::Quit => {
-
+                    self.run = false;
                 }
                 Command::Step => {
-
+                    self.game.update();
                 }
                 Command::ToggleAutostep => {
-
+                    self.autostep ^= true;
                 }
                 Command::LoadRandomGame => {
-
+                    self.game = Game::new_random_default_size();
                 }
                 Command::LoadEmptyGame => {
-
+                    self.game = Game::new_empty_default_size();
                 }
                 Command::LoadExample => {
-
+                    if let Ok(level) = load_level() {
+                        self.game = Game::new(level);
+                    }
                 }
-                Command::SetCellCommand{ new_status, grid_x, grid_y } => {
-
+                Command::SetCellCommand {
+                    new_status,
+                    grid_x,
+                    grid_y,
+                } => {
+                    self.game.set_current_state(grid_x, grid_y, new_status);
                 }
             }
         }
@@ -134,13 +146,5 @@ impl Engine {
 
     pub fn autostep(&self) -> bool {
         self.autostep
-    }
-
-    pub fn toggle_autostep(&mut self) {
-        self.autostep ^= true;
-    }
-
-    pub fn stop(&mut self) {
-        self.run = false;
     }
 }
