@@ -4,7 +4,7 @@ use sdl2::{event::Event, keyboard::Keycode, mouse::MouseButton, Sdl};
 
 use crate::{cell_status::CellStatus, engine::Engine, game::Game, command::Command};
 
-pub fn handle_sdl_event(sdl_context: Sdl) -> Vec<Command> {
+pub fn handle_sdl_events(sdl_context: &Sdl, engine: &Engine, game: &Game) -> Vec<Command> {
     let mut event_pump = sdl_context
         .event_pump()
         .expect("Could not get SDL event pump.");
@@ -18,13 +18,12 @@ pub fn handle_sdl_event(sdl_context: Sdl) -> Vec<Command> {
             }
             Event::Quit { .. } => {
                 commands.push(Command::Quit);
-                return commands;
             }
             Event::MouseMotion { .. } | Event::MouseButtonDown { .. } => {
-                // TODO
-                handle_mouse_event(self, game, event);
+                let cell_side_size = engine.window_size() as usize / game.game_side() as usize;
+                handle_mouse_event(event, cell_side_size);
             }
-            _ => { None }
+            _ => { }
         }
     }
     commands
@@ -59,52 +58,50 @@ fn handle_key_up(event: Event) -> Option<Command> {
     }
 }
 
-fn handle_mouse_event(engine: &Engine, game: &mut Game, event: Event) {
+fn handle_mouse_event(event: Event, cell_side_size: usize) -> Option<Command> {
     // TODO
     match event {
         Event::MouseMotion {
             mousestate, x, y, ..
         } => {
             if mousestate.left() {
-                handle_click(engine, game, true, x, y);
+                Some(handle_click(true, x, y, cell_side_size))
             } else if mousestate.right() {
-                handle_click(engine, game, false, x, y);
+                Some(handle_click(false, x, y, cell_side_size))
+            }
+            else {
+                None
             }
         }
         Event::MouseButtonDown {
             mouse_btn, x, y, ..
         } => match mouse_btn {
             MouseButton::Left => {
-                handle_click(engine, game, true, x, y);
+                Some(handle_click(true, x, y, cell_side_size))
             }
             MouseButton::Right => {
-                handle_click(engine, game, false, x, y);
+                Some(handle_click(false, x, y, cell_side_size))
             }
-            _ => {}
+            _ => {
+                None
+            }
         },
         _ => {
-            debug_assert!(false, "Wrong event type passed to handle mouse event.");
+            None // TODO
+            // debug_assert!(false, "Wrong event type passed to handle mouse event.");
         }
     }
 }
 
-fn handle_click(engine: &Engine, game: &mut Game, left_click: bool, x: i32, y: i32) -> Command {
+fn handle_click(left_click: bool, screen_x: i32, screen_y: i32, cell_side_size: usize) -> Command { 
     // TODO
     Command::SetCellCommand{
         new_status: if left_click {
             CellStatus::ALIVE
         } else {
             CellStatus::DEAD
-        }
-    }
-    let cell_side_size = engine.window_size() as usize / game.game_side() as usize;
-    game.set_current_state(
-        y as usize / cell_side_size,
-        x as usize / cell_side_size,
-        if left_click {
-            CellStatus::ALIVE
-        } else {
-            CellStatus::DEAD
         },
-    );
+        grid_x: screen_y as usize / cell_side_size,
+        grid_y: screen_x as usize / cell_side_size, // TODO
+    }
 }

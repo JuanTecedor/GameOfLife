@@ -1,7 +1,6 @@
 use crate::{
     cell_status::CellStatus,
-    game::Game,
-    input_handler::{handle_key_up, handle_mouse_event},
+    game::Game, input_handler::handle_sdl_events, command::Command,
 };
 
 extern crate sdl2;
@@ -96,24 +95,31 @@ impl Engine {
         self.canvas.present();
     }
 
-    pub fn handle_events(&mut self, game: &mut Game) {
-        let mut event_pump = self
-            .sdl_context
-            .event_pump()
-            .expect("Could not get SDL event pump.");
-        for event in event_pump.poll_iter() {
-            match event {
-                Event::KeyUp { .. } => {
-                    handle_key_up(self, game, event);
+    pub fn handle_events(&self, game: &Game) {
+        let commands = handle_sdl_events(&self.sdl_context, self, game);
+        for command in commands {
+            match command {
+                Command::Quit => {
+
                 }
-                Event::Quit { .. } => {
-                    self.stop();
-                    return;
+                Command::Step => {
+
                 }
-                Event::MouseMotion { .. } | Event::MouseButtonDown { .. } => {
-                    handle_mouse_event(self, game, event);
+                Command::ToggleAutostep => {
+
                 }
-                _ => {}
+                Command::LoadRandomGame => {
+
+                }
+                Command::LoadEmptyGame => {
+
+                }
+                Command::LoadExample => {
+
+                }
+                Command::SetCellCommand{ new_status, grid_x, grid_y } => {
+
+                }
             }
         }
     }
